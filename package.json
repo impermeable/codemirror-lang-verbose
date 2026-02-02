@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TU-e-SEP-2025-Group-14/codemirror-lang-verbose.git"
+    "url": "git+https://github.com/impermeable/codemirror-lang-verbose.git"
   },
   "author": "TU-e-SEP-2025-Group-14",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TU-e-SEP-2025-Group-14/codemirror-lang-verbose/issues"
+    "url": "https://github.com/impermeable/codemirror-lang-verbose/issues"
   },
-  "homepage": "https://github.com/TU-e-SEP-2025-Group-14/codemirror-lang-verbose#readme",
+  "homepage": "https://github.com/impermeable/codemirror-lang-verbose#readme",
   "dependencies": {
     "@codemirror/language": "^6.12.1",
     "@lezer/highlight": "^1.2.3",
