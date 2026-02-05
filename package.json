@@ -1,0 +1,42 @@
+{
+  "name": "codemirror-lang-verbose",
+  "version": "1.0.0",
+  "description": "CodeMirror language support for Lean4 Verbose language",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx jest",
+    "lezer-generator": "npx lezer-generator --output src/syntax.ts --typeScript src/syntax.grammar",
+    "esbuild": "node esbuild.mjs --release",
+    "gen-types": "npx tsc",
+    "build": "npm run gen-types && npm run esbuild",
+    "lint": "npx eslint .",
+    "lint-fix": "npx eslint . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/impermeable/codemirror-lang-verbose.git"
+  },
+  "author": "TU-e-SEP-2025-Group-14",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/impermeable/codemirror-lang-verbose/issues"
+  },
+  "homepage": "https://github.com/impermeable/codemirror-lang-verbose#readme",
+  "dependencies": {
+    "@codemirror/language": "^6.12.1",
+    "@lezer/highlight": "^1.2.3",
+    "@lezer/lr": "^1.4.7",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@lezer/generator": "^1.8.0",
+    "@types/jest": "^30.0.0",
+    "esbuild": "0.27.2",
+    "eslint": "^9.39.2",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.52.0"
+  }
+}
