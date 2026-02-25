@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import process from "process";
 import * as esbuild from "esbuild";
+import pkgJson from "./package.json" with {type: "json"};
 
 const watch = process.argv.includes("--watch");
 const minify = process.argv.includes("--minify") || process.argv.includes("--release");
@@ -15,6 +16,11 @@ const sharedConfig = {
   ...genSourcemap,
   platform: "browser",
   minify,
+  external: [
+    // We mark all the peerDependencies as external, that way they won't be included in the bundle
+    // but remain of the form `import ... from ...`
+    ...Object.keys(pkgJson.peerDependencies)
+  ],
   plugins: [
     {
       name: "log build status",
