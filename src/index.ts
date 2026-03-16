@@ -40,6 +40,10 @@ export const highlight_light = HighlightStyle.define([
 
 // Defining the Lean Verbose syntax, highlighting and indentation
 export const leanVerboseLanguage = LRLanguage.define({
+    languageData: {
+        closeBrackets: { brackets: ["(", "[", "{", "'", '"', "`"] },
+        commentTokens: { block: {open: "/- ", close: " -/"}, line: "--" },
+    },
     parser: parser.configure({
         props: [
             styleTags({
