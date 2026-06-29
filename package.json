@@ -19,24 +19,20 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "npx jest",
-    "lezer-generator": "npx lezer-generator --output src/syntax.ts --typeScript src/syntax.grammar",
     "esbuild": "node esbuild.mjs --release",
     "gen-types": "npx tsc",
-    "build": "npm run lezer-generator && npm run gen-types && npm run esbuild",
+    "build": "npm run gen-types && npm run esbuild",
     "lint": "npx eslint .",
     "lint-fix": "npx eslint . --fix"
   },
   "dependencies": {
-    "@lezer/highlight": "^1.2.3",
-    "@lezer/lr": "^1.4.7",
-    "ts-node": "^10.9.2"
+    "@lezer/highlight": "^1.2.3"
   },
   "peerDependencies": {
     "@codemirror/language": "^6.12.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@lezer/generator": "^1.8.0",
     "@types/jest": "^30.0.0",
     "esbuild": "0.27.2",
     "eslint": "^9.39.2",
