@@ -91,10 +91,13 @@ export type Token =
   | "argument"
   | "string"
   | "comment"
+  | "code"
   | "bracket";
 
 export interface VerboseState {
   blockCommentDepth: number;
+  // Whether we are inside a `--` line comment.
+  lineComment: boolean;
 }
 
 function lookupWord(word: string): Token {
@@ -103,35 +106,82 @@ function lookupWord(word: string): Token {
   return "argument";
 }
 
-function tokenBlockComment(stream: StringStream, state: VerboseState): Token {
+/**
+ * Consume an inline `` `code` `` span.
+ */
+function tokenInlineCode(stream: StringStream): Token {
+  stream.next(); // opening backtick
   while (!stream.eol()) {
-    if (stream.match("-/")) {
-      state.blockCommentDepth--;
-      if (state.blockCommentDepth === 0) break;
-    } else if (stream.match("/-")) {
-      state.blockCommentDepth++;
-    } else {
-      stream.next();
-    }
+    if (stream.next() === "`") break;
   }
+  return "code";
+}
+
+/**
+ * Consume a run of plain comment text, stopping before the next inline code
+ * span (backtick) or, for block comments, at the nesting/terminating delimiter.
+ */
+function consumeCommentText(
+  stream: StringStream,
+  state: VerboseState,
+  isBlock: boolean,
+): Token {
+  while (!stream.eol()) {
+    if (stream.peek() === "`") break;
+    if (isBlock) {
+      if (stream.match("-/")) {
+        state.blockCommentDepth--;
+        if (state.blockCommentDepth === 0) break;
+        continue;
+      }
+      if (stream.match("/-")) {
+        state.blockCommentDepth++;
+        continue;
+      }
+    }
+    stream.next();
+  }
+
+  if (!isBlock && stream.eol()) state.lineComment = false;
   return "comment";
 }
 
+/**
+ * Tokenize the body of an already-open comment into `comment` runs and inline
+ * `code` spans.
+ */
+function tokenComment(
+  stream: StringStream,
+  state: VerboseState,
+  isBlock: boolean,
+): Token {
+  if (stream.peek() === "`") {
+    return tokenInlineCode(stream);
+  }
+  return consumeCommentText(stream, state, isBlock);
+}
+
 export function token(stream: StringStream, state: VerboseState): Token | null {
-  // Resume a `/- -/` block comment left open on a previous line.
+  // Line comments never span lines, so clear the flag at each line start.
+  if (stream.sol()) state.lineComment = false;
+
+  // Resume a comment.
   if (state.blockCommentDepth > 0) {
-    return tokenBlockComment(stream, state);
+    return tokenComment(stream, state, true);
+  }
+  if (state.lineComment) {
+    return tokenComment(stream, state, false);
   }
 
   if (stream.eatSpace()) return null;
 
   if (stream.match("--")) {
-    stream.skipToEnd();
-    return "comment";
+    state.lineComment = true;
+    return consumeCommentText(stream, state, false);
   }
   if (stream.match("/-")) {
     state.blockCommentDepth = 1;
-    return tokenBlockComment(stream, state);
+    return consumeCommentText(stream, state, true);
   }
 
   if (stream.peek() === '"') {
