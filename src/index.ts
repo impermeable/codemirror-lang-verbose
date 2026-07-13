@@ -13,6 +13,7 @@ const tags = {
   param: Tag.define(),
   string: Tag.define(),
   comment: Tag.define(),
+  code: Tag.define(),
   bracket: Tag.define(),
 };
 
@@ -22,6 +23,7 @@ export const highlight_dark = HighlightStyle.define([
   { tag: tags.param, color: "#0077ee" },
   { tag: tags.string, color: "#00aa00" },
   { tag: tags.comment, color: "#9ea0b1ff" },
+  { tag: tags.code, color: "#3badf5" },
   { tag: tags.bracket, color: "#ff0000" },
 ]);
 
@@ -31,13 +33,14 @@ export const highlight_light = HighlightStyle.define([
   { tag: tags.param, color: "#0077aa" },
   { tag: tags.string, color: "#00aa00" },
   { tag: tags.comment, color: "#787c99" },
+  { tag: tags.code, color: "#1c7fc4" },
   { tag: tags.bracket, color: "#ff0000" },
 ]);
 
 export const leanVerboseLanguage = StreamLanguage.define<VerboseState>({
   name: "leanVerbose",
   startState() {
-    return { blockCommentDepth: 0 };
+    return { blockCommentDepth: 0, lineComment: false };
   },
   token,
   tokenTable: {
@@ -47,6 +50,7 @@ export const leanVerboseLanguage = StreamLanguage.define<VerboseState>({
     argument: tags.argument,
     string: tags.string,
     comment: tags.comment,
+    code: tags.code,
     bracket: tags.bracket,
   },
   languageData: {

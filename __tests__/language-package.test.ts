@@ -7,7 +7,7 @@ import { token, Token, VerboseState } from "../src/tokenizer";
 // Tokenize a single line into `(text, token)` pairs, driving the tokenizer directly (StreamLanguage exposes no inspectable token stream).
 function tokenizeLine(
   line: string,
-  state: VerboseState = { blockCommentDepth: 0 },
+  state: VerboseState = { blockCommentDepth: 0, lineComment: false },
 ): [text: string, token: Token | null][] {
   const stream = new StringStream(line, 4, 2);
   const result: [string, Token | null][] = [];
@@ -138,6 +138,29 @@ describe("literals and punctuation", () => {
       ["/- a /- b -/ c -/", "comment"],
       ["Fix", "tactic"],
     ]);
+  });
+
+  test("inline code in a line comment", () => {
+    expect(tokenizeLine("-- use `exact h` here")).toStrictEqual([
+      ["-- use ", "comment"],
+      ["`exact h`", "code"],
+      [" here", "comment"],
+    ]);
+  });
+
+  test("inline code in a block comment", () => {
+    expect(tokenizeLine("/- apply `foo` now -/ Fix")).toStrictEqual([
+      ["/- apply ", "comment"],
+      ["`foo`", "code"],
+      [" now -/", "comment"],
+      ["Fix", "tactic"],
+    ]);
+  });
+
+  test("backticks are only code inside comments", () => {
+    // Outside a comment the grammar never emits the `code` token.
+    const kinds = tokenizeLine("`foo`").map(([, tok]) => tok);
+    expect(kinds).not.toContain("code");
   });
 });
 
